@@ -18,7 +18,6 @@ public class Problem {
             "Найти такую прямую, которая пересекает указанный прямоугольник,\n" +
             "и при этом длина отрезка прямой внутри прямоугольника максимальна.";
 
-
     /**
      * заголовок окна
      */
@@ -33,6 +32,8 @@ public class Problem {
      * список точек
      */
     private ArrayList<Point> points;
+    private Rectangle rectangle;
+    private Line line;
 
     /**
      * Конструктор класса задачи
@@ -46,10 +47,9 @@ public class Problem {
      *
      * @param x      координата X точки
      * @param y      координата Y точки
-     * @param setVal номер множества
      */
-    public void addPoint(double x, double y, int setVal) {
-        Point point = new Point(x, y, setVal);
+    public void addPoint(double x, double y) {
+        Point point = new Point(x, y);
         points.add(point);
     }
 
@@ -84,9 +84,8 @@ public class Problem {
             while (sc.hasNextLine()) {
                 double x = sc.nextDouble();
                 double y = sc.nextDouble();
-                int setVal = sc.nextInt();
                 sc.nextLine();
-                Point point = new Point(x, y, setVal);
+                Point point = new Point(x, y);
                 points.add(point);
             }
         } catch (Exception ex) {
@@ -134,10 +133,10 @@ public class Problem {
      * @param gl переменная OpenGL для рисования
      */
     public void render(GL2 gl) {
-//        for (Point point : points) {
-//            point.render(gl);
-//        }
-        gl.glPointSize(5);
+        for (Point point : points) {
+            point.render(gl);
+        }
+        /*gl.glPointSize(5);
         gl.glBegin(GL.GL_TRIANGLE_FAN);
 
         gl.glColor3d(1,0,0);
@@ -160,6 +159,6 @@ public class Problem {
         gl.glVertex2d(-0.1,0.3);
 
 
-        gl.glEnd();
+        gl.glEnd();*/
     }
 }
