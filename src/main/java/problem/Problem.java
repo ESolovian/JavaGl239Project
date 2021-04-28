@@ -54,6 +54,17 @@ public class Problem {
     }
 
     /**
+     * Добавить "параллельный" прямоугольник
+     *
+     * @param x1    координата X первой вершины прямоугольника
+     * @param y1    координата Y первой вершины прямоугольника
+     * @param x3    координата X третьей вершины прямоугольника
+     * @param y3    координата Y третьей вершины прямоугольника
+     */
+    public void addRectangle(double x1, double y1, double x3, double y3){
+        Rectangle rectangle = new Rectangle(x1, y1, x3, y3);
+    }
+    /**
      * Решить задачу
      */
     public void solve() {
@@ -64,8 +75,8 @@ public class Problem {
                 if (p != p2) {
                     // если координаты у них совпадают
                     if (Math.abs(p.x - p2.x) < 0.0001 && Math.abs(p.y - p2.y) < 0.0001) {
-                        p.isSolution = true;
-                        p2.isSolution = true;
+                        //p.isSolution = true;
+                        //p2.isSolution = true;
                     }
                 }
             }
@@ -100,7 +111,7 @@ public class Problem {
         try {
             PrintWriter out = new PrintWriter(new FileWriter(FILE_NAME));
             for (Point point : points) {
-                out.printf("%.2f %.2f %d\n", point.x, point.y, point.setNumber);
+                out.printf("%.2f %.2f %d\n", point.x, point.y);
             }
             out.close();
         } catch (IOException ex) {
@@ -119,12 +130,20 @@ public class Problem {
             points.add(p);
         }
     }
+    /**
+     * Добавить случайный прямоугольник
+     *
+     */
+    public void addRandomRectangle(){
+        Rectangle rectangle = Rectangle.getRandomRectangle();
+    }
 
     /**
      * Очистить задачу
      */
     public void clear() {
         points.clear();
+        Rectangle rectangle = null;
     }
 
     /**
@@ -136,6 +155,7 @@ public class Problem {
         for (Point point : points) {
             point.render(gl);
         }
+        //rectangle.render(gl);
         /*gl.glPointSize(5);
         gl.glBegin(GL.GL_TRIANGLE_FAN);
 
