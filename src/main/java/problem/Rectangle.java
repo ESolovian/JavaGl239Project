@@ -2,6 +2,7 @@ package problem;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import java.util.Random;
 
 public class Rectangle {
     double x1;
@@ -24,7 +25,15 @@ public class Rectangle {
         this.y4 = y1;
     }
 
-    void render(GL2 gl) {
+    static Rectangle getRandomRectangle(){
+        Random r = new Random();
+        double nx1 = (double) r.nextInt(50) / 25 - 1;
+        double ny1 = (double) r.nextInt(50) / 25 - 1;
+        double nx3 = (double) r.nextInt(50) / 25 - 1;
+        double ny3 = (double) r.nextInt(50) / 25 - 1;
+        return new Rectangle(nx1, ny1, nx3, ny3);
+    }
+    public void render(GL2 gl) {
         gl.glBegin(GL.GL_TRIANGLES);
         gl.glVertex2d(x1, y1);
         gl.glVertex2d(x2, y2);
