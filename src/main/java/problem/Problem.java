@@ -40,13 +40,14 @@ public class Problem {
      */
     public Problem() {
         points = new ArrayList<>();
+        Rectangle rectangle = new Rectangle(0, 0, 0, 0);
     }
 
     /**
      * Добавить точку
      *
-     * @param x      координата X точки
-     * @param y      координата Y точки
+     * @param x координата X точки
+     * @param y координата Y точки
      */
     public void addPoint(double x, double y) {
         Point point = new Point(x, y);
@@ -56,14 +57,15 @@ public class Problem {
     /**
      * Добавить "параллельный" прямоугольник
      *
-     * @param x1    координата X первой вершины прямоугольника
-     * @param y1    координата Y первой вершины прямоугольника
-     * @param x3    координата X третьей вершины прямоугольника
-     * @param y3    координата Y третьей вершины прямоугольника
+     * @param x1 координата X первой вершины прямоугольника
+     * @param y1 координата Y первой вершины прямоугольника
+     * @param x3 координата X третьей вершины прямоугольника
+     * @param y3 координата Y третьей вершины прямоугольника
      */
-    public void addRectangle(double x1, double y1, double x3, double y3){
+    public void addRectangle(double x1, double y1, double x3, double y3) {
         Rectangle rectangle = new Rectangle(x1, y1, x3, y3);
     }
+
     /**
      * Решить задачу
      */
@@ -73,10 +75,9 @@ public class Problem {
             for (Point p2 : points) {
                 // если точки являются разными
                 if (p != p2) {
-                    // если координаты у них совпадают
-                    if (Math.abs(p.x - p2.x) < 0.0001 && Math.abs(p.y - p2.y) < 0.0001) {
-                        //p.isSolution = true;
-                        //p2.isSolution = true;
+                    Line line = new Line(p.x, p.y, p2.x, p2.y);
+                    if(line.k * rectangle.x1 + line.b < Math.max(rectangle.y1, rectangle.y3) && line.k * rectangle.x1 + line.b > Math.min(rectangle.y1, rectangle.y3)){
+
                     }
                 }
             }
@@ -130,11 +131,11 @@ public class Problem {
             points.add(p);
         }
     }
+
     /**
      * Добавить случайный прямоугольник
-     *
      */
-    public void addRandomRectangle(){
+    public void addRandomRectangle() {
         Rectangle rectangle = Rectangle.getRandomRectangle();
     }
 
@@ -155,30 +156,6 @@ public class Problem {
         for (Point point : points) {
             point.render(gl);
         }
-        //rectangle.render(gl);
-        /*gl.glPointSize(5);
-        gl.glBegin(GL.GL_TRIANGLE_FAN);
-
-        gl.glColor3d(1,0,0);
-        gl.glVertex2d(0.1,0.3);
-
-        gl.glColor3d(1,1,0);
-        gl.glVertex2d(-0.1,0.3);
-
-        gl.glColor3d(0,0,1);
-        gl.glVertex2d(-0.3,-0.3);
-
-        gl.glColor3d(1,1,1);
-        gl.glVertex2d(0.2,0.7);
-
-        gl.glColor3d(1,0,0);
-        gl.glVertex2d(0.1,0.3);
-
-
-        gl.glColor3d(1,0,0);
-        gl.glVertex2d(-0.1,0.3);
-
-
-        gl.glEnd();*/
+        rectangle.render(gl);
     }
 }
