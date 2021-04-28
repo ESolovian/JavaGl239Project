@@ -1,6 +1,5 @@
 package Gui;
 
-import problem.Point;
 import problem.Problem;
 
 import javax.swing.*;
@@ -16,9 +15,9 @@ public class Form extends JFrame {
      */
     private JPanel GLPlaceholder;
     private JPanel root;
-    private JTextField xPointField;
-    private JTextField yPointField;
-    private JButton randomBtn;
+    private JTextField x1PointField;
+    private JTextField y1PointField;
+    private JButton randomPointsBtn;
     private JTextField pointCntField;
     private JButton loadFromFileBtn;
     private JButton saveToFileBtn;
@@ -26,8 +25,10 @@ public class Form extends JFrame {
     private JButton solveBtn;
     private JLabel problemText;
     private JButton addPoint;
-    private JRadioButton radioButton1;
-    private JRadioButton radioButton2;
+    private JButton randomRectBtn;
+    private JButton addRectangle;
+    private JTextField x3PointField;
+    private JTextField y3PointField;
     /**
      * таймер
      */
@@ -73,6 +74,8 @@ public class Form extends JFrame {
         });
         timer.start();
         initWidgets();
+        addPoint.addMouseListener(new MouseAdapter() {
+        });
     }
 
     /**
@@ -81,23 +84,35 @@ public class Form extends JFrame {
     private void initWidgets() {
         // задаём текст полю описания задачи
         problemText.setText("<html>" + Problem.PROBLEM_TEXT.replaceAll("\n", "<br>"));
-        // делаем первое радио выбранным
-        radioButton1.setSelected(true);
-        radioButton2.setSelected(false);
 
         addPoint.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                double x = Double.parseDouble(xPointField.getText());
-                double y = Double.parseDouble(yPointField.getText());
-                int setVal = radioButton1.isSelected() ? Point.SET_1 : Point.SET_2;
-                renderer.problem.addPoint(x, y, setVal);
+                double x = Double.parseDouble(x1PointField.getText());
+                double y = Double.parseDouble(y1PointField.getText());
+                renderer.problem.addPoint(x, y);
             }
         });
-        randomBtn.addActionListener(new ActionListener() {
+        addRectangle.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                double x1 = Double.parseDouble(x1PointField.getText());
+                double y1 = Double.parseDouble(y1PointField.getText());
+                double x3 = Double.parseDouble(x3PointField.getText());
+                double y3 = Double.parseDouble(y3PointField.getText());
+                renderer.problem.addRectangle(x1, y1, x3, y3);
+            }
+        });
+        randomPointsBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 renderer.problem.addRandomPoints(Integer.parseInt(pointCntField.getText()));
+            }
+        });
+        randomRectBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                renderer.problem.addRandomRectangle();
             }
         });
         loadFromFileBtn.addActionListener(new ActionListener() {
