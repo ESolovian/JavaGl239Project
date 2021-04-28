@@ -34,11 +34,15 @@ public class Rectangle {
         return new Rectangle(nx1, ny1, nx3, ny3);
     }
     public void render(GL2 gl) {
-        gl.glBegin(GL.GL_TRIANGLES);
+        gl.glPointSize(3);
+        gl.glBegin(GL.GL_LINES);
+        gl.glColor3d(0.0, 0.0, 1.0);
         gl.glVertex2d(x1, y1);
+        gl.glVertex2d(x2, y2);
         gl.glVertex2d(x2, y2);
         gl.glVertex2d(x3, y3);
         gl.glVertex2d(x3, y3);
+        gl.glVertex2d(x4, y4);
         gl.glVertex2d(x4, y4);
         gl.glVertex2d(x1, y1);
         gl.glEnd();
