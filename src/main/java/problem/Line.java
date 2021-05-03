@@ -10,6 +10,7 @@ public class Line {
     double y2;
     double k;
     double b;
+    boolean inside;
 
     Line(double x1, double y1, double x2, double y2) {
         this.x1 = x1;
@@ -21,11 +22,16 @@ public class Line {
     }
 
     void render(GL2 gl) {
-        gl.glLineWidth(5);
-        gl.glBegin(GL.GL_LINES);
-        gl.glColor3d(1, 0.5, 0);
-        gl.glVertex2d(x1, y1);
-        gl.glVertex2d(x2, y2);
-        gl.glEnd();
+        if(inside){
+            gl.glColor3d(1, 0.0, 0.0);
+        }
+        else{
+            gl.glColor3d(1, 1, 1);
+        }
+            gl.glLineWidth(3);
+            gl.glBegin(GL.GL_LINES);
+            gl.glVertex2d(x1, y1);
+            gl.glVertex2d(x2, y2);
+            gl.glEnd();
     }
 }
