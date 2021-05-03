@@ -38,6 +38,7 @@ public class Form extends JFrame {
      */
     private final RendererGL renderer;
 
+    private boolean flag = true;
     /**
      * Конструктор формы
      */
@@ -96,11 +97,15 @@ public class Form extends JFrame {
         addRectangle.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                double x1 = Double.parseDouble(x1PointField.getText());
-                double y1 = Double.parseDouble(y1PointField.getText());
-                double x3 = Double.parseDouble(x3PointField.getText());
-                double y3 = Double.parseDouble(y3PointField.getText());
-                renderer.problem.addRectangle(x1, y1, x3, y3);
+                if(flag){
+                    flag = false;
+                    double x1 = Double.parseDouble(x1PointField.getText());
+                    double y1 = Double.parseDouble(y1PointField.getText());
+                    double x3 = Double.parseDouble(x3PointField.getText());
+                    double y3 = Double.parseDouble(y3PointField.getText());
+                    renderer.problem.addRectangle(x1, y1, x3, y3);
+                }
+                else System.out.println("Прямоугольник уже задан!");
             }
         });
         randomPointsBtn.addActionListener(new ActionListener() {
@@ -112,7 +117,11 @@ public class Form extends JFrame {
         randomRectBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                renderer.problem.addRandomRectangle();
+                if(flag){
+                    flag = false;
+                    renderer.problem.addRandomRectangle();
+                }
+                else System.out.println("Прямоугольник уже задан!");
             }
         });
         loadFromFileBtn.addActionListener(new ActionListener() {
@@ -130,6 +139,7 @@ public class Form extends JFrame {
         clearBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                flag = true;
                 renderer.problem.clear();
             }
         });
