@@ -32,15 +32,16 @@ public class Problem {
      * список точек
      */
     private ArrayList<Point> points;
-    private Rectangle rectangle;
-    private Line line;
+    private ArrayList<Rectangle> rectangles;
+    private ArrayList<Line> lines;
 
     /**
      * Конструктор класса задачи
      */
     public Problem() {
         points = new ArrayList<>();
-        Rectangle rectangle = new Rectangle(0, 0, 0, 0);
+        rectangles = new ArrayList<>();
+        lines = new ArrayList<>();
     }
 
     /**
@@ -64,6 +65,7 @@ public class Problem {
      */
     public void addRectangle(double x1, double y1, double x3, double y3) {
         Rectangle rectangle = new Rectangle(x1, y1, x3, y3);
+        rectangles.add(rectangle);
     }
 
     /**
@@ -71,18 +73,89 @@ public class Problem {
      */
     public void solve() {
         // перебираем пары точек
-        for (Point p : points) {
-            for (Point p2 : points) {
+        double lmax = 0;
+        double l = 0;
+        int iold = 2;
+        int jold = 2;
+        //for (Point p : points) {
+        for (int i = 0; i < points.size(); i++){
+            Point p = points.get(i);
+            //for (Point p2 : points) {
+            for (int j = 0; j < points.size(); j++){
+                Point p2 = points.get(j);
                 // если точки являются разными
                 if (p != p2) {
-                    Line line = new Line(p.x, p.y, p2.x, p2.y);
-                    if(line.k * rectangle.x1 + line.b < Math.max(rectangle.y1, rectangle.y3) && line.k * rectangle.x1 + line.b > Math.min(rectangle.y1, rectangle.y3)){
-
+                    Rectangle rectangle = rectangles.get(0);
+                    Line line =  new Line(p.x, p.y, p2.x, p2.y);
+                    Line line2 = new Line(0,0,0,0);
+                    // проверка на пересечение левой стороны
+                    if(line.k * rectangle.x1 + line.b <= Math.max(rectangle.y1, rectangle.y3) && line.k * rectangle.x1 + line.b >= Math.min(rectangle.y1, rectangle.y3)){
+                        line2.x1 = rectangle.x1;
+                        line2.y1 = line.k * rectangle.x1 + line.b;
+                    }
+                    // проверка на пересечение правой стороны
+                    if(line.k * rectangle.x3 + line.b <= Math.max(rectangle.y1, rectangle.y3) && line.k * rectangle.x3 + line.b >= Math.min(rectangle.y1, rectangle.y3)){
+                        if(line2.x1 != 0 && line2.y1 != 0){
+                            line2.x2 = rectangle.x3;
+                            line2.y2 = line.k * rectangle.x3 + line.b;
+                        }
+                        else{
+                            line2.x1 = rectangle.x3;
+                            line2.y1 = line.k * rectangle.x3 + line.b;
+                        }
+                    }
+                    if((line2.x1 == 0 && line2.y1 == 0) || (line2.x2 == 0 && line2.y2 == 0)){
+                        // проверка на пересечение нижней стороны
+                        if((rectangle.y1 - line.b) / line.k <= Math.max(rectangle.x1, rectangle.x3) && (rectangle.y1 - line.b) / line.k >= Math.min(rectangle.x1, rectangle.x3)){
+                            if(line2.x1 != 0 && line2.y1 != 0){
+                                line2.x2 = (rectangle.y1 - line.b) / line.k;
+                                line2.y2 = rectangle.y1;
+                            }
+                            else{
+                                line2.x1 = (rectangle.y1 - line.b) / line.k;
+                                line2.y1 = rectangle.y1;
+                            }
+                        }
+                    }
+                    if((line2.x1 == 0 && line2.y1 == 0) || (line2.x2 == 0 && line2.y2 == 0)){
+                        // проверка на пересечение верхней стороны
+                        if((rectangle.y3 - line.b) / line.k <= Math.max(rectangle.x1, rectangle.x3) && (rectangle.y3 - line.b) / line.k >= Math.min(rectangle.x1, rectangle.x3)){
+                            if(line2.x1 != 0 && line2.y1 != 0){
+                                line2.x2 = (rectangle.y3 - line.b) / line.k;
+                                line2.y2 = rectangle.y3;
+                            }
+                            else{
+                                line2.x1 = (rectangle.y3 - line.b) / line.k;
+                                line2.y1 = rectangle.y3;
+                            }
+                        }
+                    }
+                    if(line2.x1 != 0 && line2.y1 != 0 && line2.x2 != 0 && line2.y2 != 0){
+                        l = Math.sqrt(Math.pow(Math.abs(line2.x1 - line2.x2), 2) + Math.pow(Math.abs(line2.y1 - line2.y2), 2));
+                        if(l > lmax){
+                            lmax = l;
+                            points.get(iold).isSolution = false;
+                            points.get(jold).isSolution = false;
+                            iold = i;
+                            jold = j;
+                            line.x1 = -1;
+                            line.y1 = -line.k + line.b;
+                            line.x2 = 1;
+                            line.y2 = line.k + line.b;
+                            line.inside = false;
+                            line2.inside = true;
+                            lines.clear();
+                            lines.add(line);
+                            lines.add(line2);
+                            p.isSolution = true;
+                            p2.isSolution = true;
+                        }
                     }
                 }
             }
         }
     }
+
 
     /**
      * Загрузить задачу из файла
@@ -136,7 +209,8 @@ public class Problem {
      * Добавить случайный прямоугольник
      */
     public void addRandomRectangle() {
-        Rectangle rectangle = Rectangle.getRandomRectangle();
+        Rectangle r = Rectangle.getRandomRectangle();
+        rectangles.add(r);
     }
 
     /**
@@ -144,7 +218,8 @@ public class Problem {
      */
     public void clear() {
         points.clear();
-        Rectangle rectangle = null;
+        rectangles.clear();
+        lines.clear();
     }
 
     /**
@@ -153,9 +228,14 @@ public class Problem {
      * @param gl переменная OpenGL для рисования
      */
     public void render(GL2 gl) {
+        for(Rectangle rectangle : rectangles){
+            rectangle.render(gl);
+        }
+        for(Line line : lines){
+            line.render(gl);
+        }
         for (Point point : points) {
             point.render(gl);
         }
-        rectangle.render(gl);
     }
 }
