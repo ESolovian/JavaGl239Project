@@ -16,6 +16,10 @@ public class Point {
      * y - координата точки
      */
     double y;
+    /**
+     * isSolution - является ли точка решением
+     */
+    boolean isSolution;
 
     /**
      * Конструктор точки
@@ -46,8 +50,15 @@ public class Point {
      * @param gl переменная OpenGl для рисования
      */
     void render(GL2 gl) {
-        gl.glColor3d(1.0, 0.0, 0.0);
-        gl.glPointSize(3);
+        if(isSolution){
+            gl.glColor3d(1.0, 1.0, 0.5);
+            gl.glPointSize(7);
+        }
+        else{
+            gl.glColor3d(1.0, 0.5, 0.0);
+            gl.glPointSize(3);
+        }
+
         gl.glBegin(GL.GL_POINTS);
         gl.glVertex2d(x, y);
         gl.glEnd();
