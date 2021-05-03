@@ -82,9 +82,7 @@ class RendererGL implements GLEventListener {
      *
      * @return область рисования
      */
-    GLCanvas getCanvas() {
-        return canvas;
-    }
+    GLCanvas getCanvas() { return canvas; }
 
     /**
      * Закрыть рисовальщик
