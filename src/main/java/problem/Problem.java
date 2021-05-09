@@ -1,6 +1,5 @@
 package problem;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import java.io.*;
 import java.util.ArrayList;
@@ -26,10 +25,10 @@ public class Problem {
     /**
      * путь к файлу
      */
-    private static final String FILE_NAME = "points.txt";
+    private static final String FILE_NAME = "points&rectangle.txt";
 
     /**
-     * список точек
+     * списки точек, прямых и прямоугольников
      */
     private ArrayList<Point> points;
     private ArrayList<Rectangle> rectangles;
@@ -72,88 +71,113 @@ public class Problem {
      * Решить задачу
      */
     public void solve() {
-        // перебираем пары точек
+        // обнуляем максимальную длину и индексы
         double lmax = 0;
-        double l = 0;
-        int iold = 2;
-        int jold = 2;
-        //for (Point p : points) {
-        for (int i = 0; i < points.size(); i++){
-            Point p = points.get(i);
-            //for (Point p2 : points) {
-            for (int j = 0; j < points.size(); j++){
-                Point p2 = points.get(j);
-                // если точки являются разными
-                if (p != p2) {
-                    Rectangle rectangle = rectangles.get(0);
-                    Line line =  new Line(p.x, p.y, p2.x, p2.y);
-                    Line line2 = new Line(0,0,0,0);
-                    // проверка на пересечение левой стороны
-                    if(line.k * rectangle.x1 + line.b <= Math.max(rectangle.y1, rectangle.y3) && line.k * rectangle.x1 + line.b >= Math.min(rectangle.y1, rectangle.y3)){
-                        line2.x1 = rectangle.x1;
-                        line2.y1 = line.k * rectangle.x1 + line.b;
-                    }
-                    // проверка на пересечение правой стороны
-                    if(line.k * rectangle.x3 + line.b <= Math.max(rectangle.y1, rectangle.y3) && line.k * rectangle.x3 + line.b >= Math.min(rectangle.y1, rectangle.y3)){
-                        if(line2.x1 != 0 && line2.y1 != 0){
-                            line2.x2 = rectangle.x3;
-                            line2.y2 = line.k * rectangle.x3 + line.b;
+        double l;
+        int iold = 0;
+        int jold = 0;
+        // каждую точку множества обозначаем как НЕ точку решения
+        for(Point point : points){
+            point.isSolution = false;
+        }
+        // если введено менее 2 точек
+        if(points.size() < 2) System.out.println("Введено недостаточно точек!");
+        // если не введен прямоугольник
+        if(rectangles.size() == 0) System.out.println("Прямоугольник не задан!");
+        else{
+            // перебираем пары точек
+            for (int i = 0; i < points.size(); i++){
+                Point p = points.get(i);
+                for (int j = 0; j < points.size(); j++){
+                    Point p2 = points.get(j);
+                    // если точки являются разными
+                    if (p != p2) {
+                        Rectangle rectangle = rectangles.get(0);
+                        // создаем объекты прямой, проходящей через 2 точки, и её отрезок
+                        Line line =  new Line(p.x, p.y, p2.x, p2.y);
+                        Line line2 = new Line(0,0,0,0);
+                        // проверка на пересечение левой стороны
+                        if(line.k * rectangle.x1 + line.b <= Math.max(rectangle.y1, rectangle.y3) && line.k * rectangle.x1 + line.b >= Math.min(rectangle.y1, rectangle.y3)){
+                            line2.x1 = rectangle.x1;
+                            line2.y1 = line.k * rectangle.x1 + line.b;
                         }
-                        else{
-                            line2.x1 = rectangle.x3;
-                            line2.y1 = line.k * rectangle.x3 + line.b;
-                        }
-                    }
-                    if((line2.x1 == 0 && line2.y1 == 0) || (line2.x2 == 0 && line2.y2 == 0)){
-                        // проверка на пересечение нижней стороны
-                        if((rectangle.y1 - line.b) / line.k <= Math.max(rectangle.x1, rectangle.x3) && (rectangle.y1 - line.b) / line.k >= Math.min(rectangle.x1, rectangle.x3)){
+                        // проверка на пересечение правой стороны
+                        if(line.k * rectangle.x3 + line.b <= Math.max(rectangle.y1, rectangle.y3) && line.k * rectangle.x3 + line.b >= Math.min(rectangle.y1, rectangle.y3)){
+                            // проверка, нашли ли уже первую точку пересечения
                             if(line2.x1 != 0 && line2.y1 != 0){
-                                line2.x2 = (rectangle.y1 - line.b) / line.k;
-                                line2.y2 = rectangle.y1;
+                                line2.x2 = rectangle.x3;
+                                line2.y2 = line.k * rectangle.x3 + line.b;
                             }
                             else{
-                                line2.x1 = (rectangle.y1 - line.b) / line.k;
-                                line2.y1 = rectangle.y1;
+                                line2.x1 = rectangle.x3;
+                                line2.y1 = line.k * rectangle.x3 + line.b;
                             }
                         }
-                    }
-                    if((line2.x1 == 0 && line2.y1 == 0) || (line2.x2 == 0 && line2.y2 == 0)){
-                        // проверка на пересечение верхней стороны
-                        if((rectangle.y3 - line.b) / line.k <= Math.max(rectangle.x1, rectangle.x3) && (rectangle.y3 - line.b) / line.k >= Math.min(rectangle.x1, rectangle.x3)){
-                            if(line2.x1 != 0 && line2.y1 != 0){
-                                line2.x2 = (rectangle.y3 - line.b) / line.k;
-                                line2.y2 = rectangle.y3;
-                            }
-                            else{
-                                line2.x1 = (rectangle.y3 - line.b) / line.k;
-                                line2.y1 = rectangle.y3;
+                        // проверка, не нашли ли уже обе точки пересечения
+                        if((line2.x1 == 0 && line2.y1 == 0) || (line2.x2 == 0 && line2.y2 == 0)){
+                            // проверка на пересечение нижней стороны
+                            if((rectangle.y1 - line.b) / line.k <= Math.max(rectangle.x1, rectangle.x3) && (rectangle.y1 - line.b) / line.k >= Math.min(rectangle.x1, rectangle.x3)){
+                                // проверка, нашли ли уже первую точку пересечения
+                                if(line2.x1 != 0 && line2.y1 != 0){
+                                    line2.x2 = (rectangle.y1 - line.b) / line.k;
+                                    line2.y2 = rectangle.y1;
+                                }
+                                else{
+                                    line2.x1 = (rectangle.y1 - line.b) / line.k;
+                                    line2.y1 = rectangle.y1;
+                                }
                             }
                         }
-                    }
-                    if(line2.x1 != 0 && line2.y1 != 0 && line2.x2 != 0 && line2.y2 != 0){
-                        l = Math.sqrt(Math.pow(Math.abs(line2.x1 - line2.x2), 2) + Math.pow(Math.abs(line2.y1 - line2.y2), 2));
-                        if(l > lmax){
-                            lmax = l;
-                            points.get(iold).isSolution = false;
-                            points.get(jold).isSolution = false;
-                            iold = i;
-                            jold = j;
-                            line.x1 = -1;
-                            line.y1 = -line.k + line.b;
-                            line.x2 = 1;
-                            line.y2 = line.k + line.b;
-                            line.inside = false;
-                            line2.inside = true;
-                            lines.clear();
-                            lines.add(line);
-                            lines.add(line2);
-                            p.isSolution = true;
-                            p2.isSolution = true;
+                        // проверка, не нашли ли уже обе точки пересечения
+                        if((line2.x1 == 0 && line2.y1 == 0) || (line2.x2 == 0 && line2.y2 == 0)){
+                            // проверка на пересечение верхней стороны
+                            if((rectangle.y3 - line.b) / line.k <= Math.max(rectangle.x1, rectangle.x3) && (rectangle.y3 - line.b) / line.k >= Math.min(rectangle.x1, rectangle.x3)){
+                                // проверка, нашли ли уже первую точку пересечения
+                                if(line2.x1 != 0 && line2.y1 != 0){
+                                    line2.x2 = (rectangle.y3 - line.b) / line.k;
+                                    line2.y2 = rectangle.y3;
+                                }
+                                else{
+                                    line2.x1 = (rectangle.y3 - line.b) / line.k;
+                                    line2.y1 = rectangle.y3;
+                                }
+                            }
+                        }
+                        // проверка, найдены ли две точки пересечения
+                        if(line2.x1 != 0 && line2.y1 != 0 && line2.x2 != 0 && line2.y2 != 0){
+                            // вычисление длины отрезка
+                            l = Math.sqrt(Math.pow((line2.x1 - line2.x2), 2) + Math.pow((line2.y1 - line2.y2), 2));
+                            if(l > lmax){
+                                lmax = l;
+                                // точки, через которые проходила последняя найденная прямая
+                                points.get(iold).isSolution = false;
+                                points.get(jold).isSolution = false;
+                                // отмечаем пару точек как точки решения
+                                iold = i;
+                                jold = j;
+                                p.isSolution = true;
+                                p2.isSolution = true;
+                                // отмечаем отрезок внутри прямоугольника как искомый
+                                line.inside = false;
+                                line2.inside = true;
+                                // изменяем координаты прямой, чтобы она проходила по всей сцене
+                                line.x1 = -1;
+                                line.y1 = -line.k + line.b;
+                                line.x2 = 1;
+                                line.y2 = line.k + line.b;
+                                // очищаем список прямых
+                                lines.clear();
+                                // добавляем в список искомые прямую и отрезок
+                                lines.add(line);
+                                lines.add(line2);
+                            }
                         }
                     }
                 }
             }
         }
+        // если после перебора всех пар точек не нашлась искомая прямая
+        if(lines.size() == 0) System.out.println("При заданном множестве точек и прямоугольнике не существует искомой прямой!");
     }
 
 
@@ -162,16 +186,29 @@ public class Problem {
      */
     public void loadFromFile() {
         points.clear();
+        rectangles.clear();
+        lines.clear();
         try {
             File file = new File(FILE_NAME);
             Scanner sc = new Scanner(file);
+            boolean flag = true;
             // пока в файле есть непрочитанные строки
             while (sc.hasNextLine()) {
-                double x = sc.nextDouble();
-                double y = sc.nextDouble();
-                sc.nextLine();
-                Point point = new Point(x, y);
-                points.add(point);
+                if(flag){
+                    flag = false;
+                    double x1 = sc.nextDouble();
+                    double y1 = sc.nextDouble();
+                    double x3 = sc.nextDouble();
+                    double y3 = sc.nextDouble();
+                    Rectangle rectangle = new Rectangle(x1, y1, x3, y3);
+                    rectangles.add(rectangle);
+                }
+                else{
+                    double x = sc.nextDouble();
+                    double y = sc.nextDouble();
+                    Point point = new Point(x, y);
+                    points.add(point);
+                }
             }
         } catch (Exception ex) {
             System.out.println("Ошибка чтения из файла: " + ex);
@@ -184,8 +221,11 @@ public class Problem {
     public void saveToFile() {
         try {
             PrintWriter out = new PrintWriter(new FileWriter(FILE_NAME));
+            for(Rectangle rectangle : rectangles){
+                out.printf("%.2f %.2f %.2f %.2f \n", rectangle.x1, rectangle.y1, rectangle.x3, rectangle.y3);
+            }
             for (Point point : points) {
-                out.printf("%.2f %.2f %d\n", point.x, point.y);
+                out.printf("%.2f %.2f \n", point.x, point.y);
             }
             out.close();
         } catch (IOException ex) {
