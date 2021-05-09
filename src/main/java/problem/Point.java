@@ -56,7 +56,7 @@ public class Point {
         }
         else{
             gl.glColor3d(1.0, 0.5, 0.0);
-            gl.glPointSize(3);
+            gl.glPointSize(5);
         }
 
         gl.glBegin(GL.GL_POINTS);
